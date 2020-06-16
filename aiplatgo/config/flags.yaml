@@ -1,0 +1,60 @@
+train:
+    - config
+    - job-dir
+    - labels
+    - master-accelerator
+    - master-image-uri
+    - master-machine-type
+    - module-name
+    - package-path
+    - packages
+    - parameter-server-accelerator
+    - parameter-server-image-uri
+    - python-version
+    - region
+    - runtime-version
+    - scale-tier
+    - staging-bucket
+    - use-chief-in-tf-config
+    - worker-accelerator
+    - worker-image-uri
+    - async
+    - stream-logs
+    - parameter-server-count
+    - parameter-server-machine-type
+    - worker-count
+    - worker-machine-type
+
+predict:
+    - data-format
+    - input-paths
+    - output-path
+    - region
+    - model
+    - model-dir
+    - batch-size
+    - labels
+    - max-worker-count
+    - runtime-version
+    - signature-name
+    - version
+
+local_train:
+    - module-name
+    - distributed
+    - evaluator-count
+    - job-dir
+    - package-path
+    - parameter-server-count
+    - start-port
+    - worker-count
+
+local_predict:
+    - model-dir
+    - json-instances
+    - json-request
+    - text-instances
+    - framework
+    - signature-name
+
+
