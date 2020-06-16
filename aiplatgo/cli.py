@@ -25,14 +25,16 @@ TRAIN_HELP=(
     'submit training job to platform:  '
     '* name<optional>: job name. '
     'default or "." to use name from yaml([config][name])  ' )+SHARED_HELP
+PRED_HELP=(
+    'submit prediction job to platform:  '
+    '* name<optional>: job name. '
+    'default or "." to use name from yaml([config][name])  ' )+SHARED_HELP
 ECHO_HELP='if true print command without executing'
 ECHO=False
 ARG_KWARGS_SETTINGS={
     'ignore_unknown_options': True,
     'allow_extra_args': True
 }
-
-
 #
 # CLI INTERFACE
 #
@@ -42,29 +44,46 @@ def cli(ctx):
     ctx.obj={}
 
 
+
 @click.command( help=LOCAL_HELP,context_settings=ARG_KWARGS_SETTINGS ) 
 @click.argument('verb',type=str)
 @click.argument('config',type=str,required=False)
-@click.option('--echo',help=ECHO_HELP,default=ECHO,type=bool)
+@click.option('--echo','-e',help=ECHO_HELP,default=ECHO,is_flag=True,type=bool)
 @click.pass_context
 def local(ctx,verb,config='.',echo=ECHO):
     args, kwargs = _process_args(ctx,config)
     cmd=command.local(verb,*args,**kwargs)
-
+    _execute(cmd,echo)
 
 
 
 @click.command( help=TRAIN_HELP,context_settings=ARG_KWARGS_SETTINGS ) 
 @click.argument('name',type=str)
 @click.argument('config',type=str,required=False)
-@click.option('--echo',help=ECHO_HELP,default=ECHO,type=bool)
+@click.option('--echo','-e',help=ECHO_HELP,default=ECHO,is_flag=True,type=bool)
 @click.pass_context
 def train(ctx,name='.',config='.',echo=ECHO):
     args, kwargs = _process_args(ctx,config)
     if name in SKIPS:
         name=kwargs['config']['name']
+    else:
+        kwargs['config']['name']=name
     cmd=command.train(name,*args,**kwargs)
+    _execute(cmd,echo)
 
+
+
+@click.command( help=PRED_HELP,context_settings=ARG_KWARGS_SETTINGS ) 
+@click.argument('name',type=str)
+@click.argument('config',type=str,required=False)
+@click.option('--echo','-e',help=ECHO_HELP,default=ECHO,is_flag=True,type=bool)
+@click.pass_context
+def predict(ctx,name='.',config='.',echo=ECHO):
+    args, kwargs = _process_args(ctx,config)
+    if name in SKIPS:
+        name=kwargs['config']['name']
+    cmd=command.predict(name,*args,**kwargs)
+    _execute(cmd,echo)
 
 #
 # HELPERS
@@ -94,10 +113,10 @@ def _get_config(config):
 def _process_args(ctx,config):
     args, kwargs=_args_kwargs(ctx.args)
     _kwargs=_get_config(config)
+    _kwargs['config']=_kwargs.get('config',{})
+    _kwargs['args']=_kwargs.get('args',{})
+    _kwargs['user']=_kwargs.get('user',{})
     if kwargs:
-        _kwargs['config']=_kwargs.get('config',{})
-        _kwargs['args']=_kwargs.get('args',{})
-        _kwargs['user']=_kwargs.get('user',{})
         for k,v in kwargs.items():
             d,k=_key_path(k)
             _kwargs[d][k]=v
@@ -112,6 +131,10 @@ def _key_path(key):
     return d, k
 
 
+def _execute(cmd,echo):
+    print(cmd)
+    if not echo:
+        os.system(cmd)
 
 #
 # MAIN

@@ -18,6 +18,14 @@ LOCAL='local'
 LOCAL_VERBS=['train','predict']
 TRAIN='jobs submit training'
 PREDICT='jobs submit prediction'
+CFIG_ALIASES={
+    'staging_bucket': 'staging-bucket',
+    'staging_folder': 'staging-folder',
+    'staging': 'staging-bucket',
+    'output_bucket': 'output-bucket',
+    'output_folder': 'output-folder',
+    'output': 'output-bucket'
+}
 ALIASES={
     'scale_tier': 'scale-tier',
     'package_path': 'package-path',
@@ -28,12 +36,9 @@ ALIASES={
     'package': 'package-path',
     'module': 'module-name'
 }
-GS='gs://'
-GS_PREFIX_KEYS=[
-    'staging-bucket',
-    'job-dir' ]
-
-
+GS='gs:/'
+OUTPUT_DIR='output'
+STAGING_DIR='staging'
 
 #
 # PUBLIC
@@ -41,15 +46,18 @@ GS_PREFIX_KEYS=[
 def local(verb,*args,**kwargs):
     if verb not in LOCAL_VERBS:
         raise NotImplementedError(f'<{verb}> not in {LOCAL_VERBS}')
-    verb=f'{LOCAL} {verb}'
-    kwargs=_process_kwargs(kwargs,_excluded_flags(f'local_{verb}'))
-    return _build(verb,*args,**kwargs)
+    kwargs=_process_kwargs(kwargs,_excluded_flags(f'local_{verb}'),gs_prefix=False)
+    return _build(f'{LOCAL} {verb}',*args,**kwargs)
 
 
 def train(job,*args,**kwargs):
     kwargs=_process_kwargs(kwargs,_excluded_flags('train'))
-    return _build(TRAIN,*args,**kwargs)
+    return _build(f'{TRAIN} {job}',*args,**kwargs)
 
+
+def predict(job,*args,**kwargs):
+    kwargs=_process_kwargs(kwargs,_excluded_flags('predict'))
+    return _build(f'{PREDICT} {job}',*args,**kwargs)
 
 
 #
@@ -83,21 +91,59 @@ def _cat(cmd,value=None,key=None,prefix=FLAG_PREFIX):
 
 
 def _process_kwargs(kwargs,exclude=None,gs_prefix=True):
-    args=kwargs.get('args',{})
-    args.update(kwargs.get('user',{}))
-    args={ ALIASES.get(k,k): v for k,v in args.items() }
+    config=kwargs.get('config',{})
+    config={ CFIG_ALIASES.get(k,k): v for k,v in config.items() }
+    _kwargs=kwargs.get('args',{})
+    _kwargs.update(kwargs.get('user',{}))
+    _kwargs={ ALIASES.get(k,k): v for k,v in _kwargs.items() }
+    version=config.get('version')
+    if version: 
+        version=f'v{version}'
+    if not _kwargs.get('job-dir'):
+        _kwargs['job-dir']=_path(OUTPUT_DIR,config.get('name'),version)
     if exclude: 
-        [ args.pop(k,None) for k in exclude ]
+        [ _kwargs.pop(k,None) for k in exclude ]
     if gs_prefix:
-        for k in GS_PREFIX_KEYS:
-            args=_gs_prefix(args,k)
-    return args
+        _kwargs=_gs_prefix(config,_kwargs,version)
+    return _kwargs
 
 
-def _gs_prefix(args,key):
-    v=args.get(key)
-    if v and (not re.search(f'^{GS}',v)):
-        args[key]=f"{GS}{re.sub('^/','',v)}"
-    return args
+def _gs_prefix(config,kwargs,version):
+    folder=config.get('folder')
+    bucket=config.get('bucket')
+    output_bucket=config.get('output-bucket',bucket)
+    staging_bucket=config.get('staging-bucket',bucket)
+    output_folder=config.get('output-folder')
+    staging_folder=config.get(
+        'staging-folder',
+        _path(STAGING_DIR,config.get('name'),version))
+    kwargs['job-dir']=_gs_prefix_build(
+        kwargs,
+        'job-dir',
+        output_bucket,
+        folder,
+        output_folder )
+    kwargs['staging-bucket']=_gs_prefix_build( 
+        kwargs,
+        'staging-bucket',
+        staging_bucket,
+        folder,
+        staging_folder )
+    return kwargs
+
+
+def _gs_prefix_build(kwargs,key,*parts):
+    value=kwargs.get(key)
+    if not re.search(f'^{GS}',str(value)):
+        value=_path(value,*([GS]+list(parts)))
+    return value
+
+
+def _path(value,*parts):
+    parts=[p for p in parts if p]
+    if value: parts.append(value)
+    return "/".join(parts)
+
+
 
 
