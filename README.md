@@ -95,7 +95,7 @@ aiplatgo train . config --echo
 gcloud ai-platform jobs submit training my_default_job_name --package-path trainer --module-name trainer.task --region us-central1 --user_arg_1 1 --user_arg_2 2 --job-dir gs://dev-ai-platform/gcs/folder/dev/my_default_job_name/v1/output --staging-bucket gs://dev-ai-platform/gcs/folder/dev/my_default_job_name/v1/staging
 ```
 
-Note: similarly you can use `.` to skip a config file, only using command-line args, kwargs but at that point you should just go back to using Google's native `ai platform` CLI.
+Note: similarly you can use `.` to skip a config file, only using command-line args/kwargs but at that point you should just go back to using Google's native `ai platform` CLI.
 
 ---
 
