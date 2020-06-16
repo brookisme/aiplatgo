@@ -1,12 +1,10 @@
 ### aiplatgo
 
-CLI wrapper for [`gcloud ai-platform`](https://cloud.google.com/sdk/gcloud/reference/ai-platform)
-
-_because_
+CLI wrapper for [`gcloud ai-platform`](https://cloud.google.com/sdk/gcloud/reference/ai-platform), because ...
 
 ["For convenience, it's useful to define your configuration values as environment variables.](https://cloud.google.com/ai-platform/training/docs/packaging-trainer#using_gcloud_to_package_and_upload_your_application_recommended) ... [Even if you use a YAML file, certain details must be supplied as command-line flags."](https://cloud.google.com/ai-platform/training/docs/training-jobs#formatting-your-configuration-parameters)
 
-_is silly_
+is silly.
 
 --- 
 
