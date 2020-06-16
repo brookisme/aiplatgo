@@ -1,6 +1,12 @@
 ### aiplatgo
 
-CLI wrapper for [`gcloud ai-platform`](https://cloud.google.com/sdk/gcloud/reference/ai-platform). Because ...
+`aiplatgo` is a [convince wrapper](#examples) for:
+
+- [`gcloud ai-platform jobs submit training`](#train)
+- [`gcloud ai-platform jobs submit prediction`](#pred)
+- [`gcloud ai-platform local`](#local)
+
+Because ...
 
 ["For convenience, it's useful to define your configuration values as environment variables.](https://cloud.google.com/ai-platform/training/docs/packaging-trainer#using_gcloud_to_package_and_upload_your_application_recommended) ... [Even if you use a YAML file, certain details must be supplied as command-line flags."](https://cloud.google.com/ai-platform/training/docs/training-jobs#formatting-your-configuration-parameters)
 
@@ -8,15 +14,9 @@ is silly.
 
 --- 
 
-`aiplatgo` is a convince wrapper for:
+`aiplatgo`'s config file to replaces the combination of CLI-flags and config file natively offered by [`gcloud ai platform`](https://cloud.google.com/sdk/gcloud/reference/ai-platform/). Moreover:
 
-- [`gcloud ai-platform jobs submit training`](#train)
-- [`gcloud ai-platform jobs submit prediction`](#pred)
-- [`gcloud ai-platform local`](#local)
-
-It uses a yaml config file to replace the combination of CLI flags and config file natively offered by [`ai platform`](https://cloud.google.com/sdk/gcloud/reference/ai-platform/). Moreover:
-
-- The config file can contain all possible flags for training or prediction local or platform. Only the relevant flags will be submitted.
+- The config file can contain all possible flags for training or prediction local or platform. Only relevant flags will be submitted .
 - There are configurations to automatically handle naming conventions
 - platform job directories can automatically be prefixed with `gs://bucket/folder`
 - Underscores are accepted: ie `arg_name` for `arg-name`
@@ -24,7 +24,9 @@ It uses a yaml config file to replace the combination of CLI flags and config fi
 
 ---
 
-### EXAMPLES
+<a name="examples">
+
+### MINIMAL EXAMPLES
 
 ```yaml
 # filename: config.yaml`
