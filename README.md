@@ -1,6 +1,6 @@
 ### aiplatgo
 
-CLI wrapper for [`gcloud ai-platform`](https://cloud.google.com/sdk/gcloud/reference/ai-platform), because ...
+CLI wrapper for [`gcloud ai-platform`](https://cloud.google.com/sdk/gcloud/reference/ai-platform). Because ...
 
 ["For convenience, it's useful to define your configuration values as environment variables.](https://cloud.google.com/ai-platform/training/docs/packaging-trainer#using_gcloud_to_package_and_upload_your_application_recommended) ... [Even if you use a YAML file, certain details must be supplied as command-line flags."](https://cloud.google.com/ai-platform/training/docs/training-jobs#formatting-your-configuration-parameters)
 
@@ -48,7 +48,7 @@ The examples below assume there is config file named `config.yaml`, and use the 
 # local train
 $ aiplatgo local train config --echo
 
-# OUTPUT -----------------------------------------
+# OUTPUT ======================================================================
 # gcloud ai-platform local train --package-path trainer --module-name trainer.task --user_arg_1 1 --user_arg_2 2 --job-dir v1/output
 # =============================================================================
 
@@ -56,7 +56,7 @@ $ aiplatgo local train config --echo
 # platform training
 $ aiplatgo train my_job config --echo
 
-# OUTPUT -----------------------------------------
+# OUTPUT ======================================================================
 # gcloud ai-platform jobs submit training my_job --package-path trainer --module-name trainer.task --region us-central1 --user_arg_1 1 --user_arg_2 2 --job-dir gs://dev-ai-platform/gcs/folder/dev/my_job/v1/output --staging-bucket gs://dev-ai-platform/gcs/folder/dev/my_job/v1/staging
 # =============================================================================
 ```
@@ -66,7 +66,7 @@ With command-line args/kwargs:
 ```bash
 $ aiplatgo local train config distributed version=1234 worker-count=4 --echo
 
-# OUTPUT -----------------------------------------
+# OUTPUT ======================================================================
 # gcloud ai-platform local train --distributed --package-path trainer --module-name trainer.task --worker-count 4 --user_arg_1 1 --user_arg_2 2 --job-dir v1/output
 # =============================================================================
 ```
@@ -84,7 +84,7 @@ config:
 ```bash
 $ aiplatgo train . config --echo
 
-# OUTPUT -----------------------------------------
+# OUTPUT ======================================================================
 # gcloud ai-platform jobs submit training my_default_job_name --package-path trainer --module-name trainer.task --region us-central1 --user_arg_1 1 --user_arg_2 2 --job-dir gs://dev-ai-platform/gcs/folder/dev/my_default_job_name/v1/output --staging-bucket gs://dev-ai-platform/gcs/folder/dev/my_default_job_name/v1/staging
 # =============================================================================
 ```
