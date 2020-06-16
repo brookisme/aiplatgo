@@ -1,6 +1,6 @@
 ### aiplatgo
 
-`aiplatgo` is a [convince wrapper](#examples) for:
+A [convince wrapper](#examples) for:
 
 - [`gcloud ai-platform jobs submit training`](#train)
 - [`gcloud ai-platform jobs submit prediction`](#pred)
