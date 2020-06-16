@@ -4,11 +4,7 @@ CLI wrapper for [`gcloud ai-platform`](https://cloud.google.com/sdk/gcloud/refer
 
 _because_
 
-    ["For convenience, it's useful to define your configuration values as environment variables."](https://cloud.google.com/ai-platform/training/docs/packaging-trainer#using_gcloud_to_package_and_upload_your_application_recommended)
-    
-    ...
-
-    ["Even if you use a YAML file, certain details must be supplied as command-line flags."](https://cloud.google.com/ai-platform/training/docs/training-jobs#formatting-your-configuration-parameters)
+["For convenience, it's useful to define your configuration values as environment variables.](https://cloud.google.com/ai-platform/training/docs/packaging-trainer#using_gcloud_to_package_and_upload_your_application_recommended) ... [Even if you use a YAML file, certain details must be supplied as command-line flags."](https://cloud.google.com/ai-platform/training/docs/training-jobs#formatting-your-configuration-parameters)
 
 _is silly_
 
@@ -51,42 +47,48 @@ user:
 The examples below assume there is config file named `config.yaml`, and use the `--echo`-flag which prints out the command without executing:
 
 ```bash
-# ------------------------------------------------
-# - config file name `cfig.yaml`
-# - flag echo=
-# ------------------------------------------------
-
-
 # local train
-aiplatgo local train config --echo
+$ aiplatgo local train config --echo
+
 # OUTPUT -----------------------------------------
-#gcloud ai-platform local train --package-path trainer --module-name trainer.task --user_arg_1 1 --user_arg_2 2 --job-dir v1/output
-# ------------------------------------------------
+# gcloud ai-platform local train --package-path trainer --module-name trainer.task --user_arg_1 1 --user_arg_2 2 --job-dir v1/output
+# =============================================================================
 
 
 # platform training
-aiplatgo train my_job config --echo
+$ aiplatgo train my_job config --echo
+
 # OUTPUT -----------------------------------------
 # gcloud ai-platform jobs submit training my_job --package-path trainer --module-name trainer.task --region us-central1 --user_arg_1 1 --user_arg_2 2 --job-dir gs://dev-ai-platform/gcs/folder/dev/my_job/v1/output --staging-bucket gs://dev-ai-platform/gcs/folder/dev/my_job/v1/staging
-# ------------------------------------------------
+# =============================================================================
 ```
 
 With command-line args/kwargs:
 
 ```bash
-aiplatgo local train config distributed version=1234 worker-count=4 --echo
+$ aiplatgo local train config distributed version=1234 worker-count=4 --echo
+
 # OUTPUT -----------------------------------------
 # gcloud ai-platform local train --distributed --package-path trainer --module-name trainer.task --worker-count 4 --user_arg_1 1 --user_arg_2 2 --job-dir v1/output
-# ------------------------------------------------
+# =============================================================================
 ```
 
 Adding a default_job_name:
 
+
+```yaml
+# filename: config.yaml`
+config:
+    name: my_default_job_name
+    ...
+```
+
 ```bash
-aiplatgo train . config --echo
+$ aiplatgo train . config --echo
+
 # OUTPUT -----------------------------------------
 # gcloud ai-platform jobs submit training my_default_job_name --package-path trainer --module-name trainer.task --region us-central1 --user_arg_1 1 --user_arg_2 2 --job-dir gs://dev-ai-platform/gcs/folder/dev/my_default_job_name/v1/output --staging-bucket gs://dev-ai-platform/gcs/folder/dev/my_default_job_name/v1/staging
-# ------------------------------------------------
+# =============================================================================
 ```
 
 Note: similarly you can use `.` to skip a config file, only using command-line args, kwargs but at that point you should just go back to using Google's native `ai platform` CLI.
