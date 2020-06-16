@@ -46,29 +46,33 @@ The examples below assume there is config file named `config.yaml`, and use the 
 
 ```bash
 # local train
-$ aiplatgo local train config --echo
+aiplatgo local train config --echo
+```
 
-# OUTPUT ======================================================================
-# gcloud ai-platform local train --package-path trainer --module-name trainer.task --user_arg_1 1 --user_arg_2 2 --job-dir v1/output
-# =============================================================================
+```bash
+# output
+gcloud ai-platform local train --package-path trainer --module-name trainer.task --user_arg_1 1 --user_arg_2 2 --job-dir v1/output
+```
 
-
+```bash
 # platform training
-$ aiplatgo train my_job config --echo
+aiplatgo train my_job config --echo
+```
 
-# OUTPUT ======================================================================
-# gcloud ai-platform jobs submit training my_job --package-path trainer --module-name trainer.task --region us-central1 --user_arg_1 1 --user_arg_2 2 --job-dir gs://dev-ai-platform/gcs/folder/dev/my_job/v1/output --staging-bucket gs://dev-ai-platform/gcs/folder/dev/my_job/v1/staging
-# =============================================================================
+```bash
+# output
+gcloud ai-platform jobs submit training my_job --package-path trainer --module-name trainer.task --region us-central1 --user_arg_1 1 --user_arg_2 2 --job-dir gs://dev-ai-platform/gcs/folder/dev/my_job/v1/output --staging-bucket gs://dev-ai-platform/gcs/folder/dev/my_job/v1/staging
 ```
 
 With command-line args/kwargs:
 
 ```bash
-$ aiplatgo local train config distributed version=1234 worker-count=4 --echo
+aiplatgo local train config distributed version=1234 worker-count=4 --echo
+```
 
-# OUTPUT ======================================================================
-# gcloud ai-platform local train --distributed --package-path trainer --module-name trainer.task --worker-count 4 --user_arg_1 1 --user_arg_2 2 --job-dir v1/output
-# =============================================================================
+```bash
+# output
+gcloud ai-platform local train --distributed --package-path trainer --module-name trainer.task --worker-count 4 --user_arg_1 1 --user_arg_2 2 --job-dir v1/output
 ```
 
 Adding a default_job_name:
@@ -82,11 +86,12 @@ config:
 ```
 
 ```bash
-$ aiplatgo train . config --echo
+aiplatgo train . config --echo
+```
 
-# OUTPUT ======================================================================
-# gcloud ai-platform jobs submit training my_default_job_name --package-path trainer --module-name trainer.task --region us-central1 --user_arg_1 1 --user_arg_2 2 --job-dir gs://dev-ai-platform/gcs/folder/dev/my_default_job_name/v1/output --staging-bucket gs://dev-ai-platform/gcs/folder/dev/my_default_job_name/v1/staging
-# =============================================================================
+```bash
+# output
+gcloud ai-platform jobs submit training my_default_job_name --package-path trainer --module-name trainer.task --region us-central1 --user_arg_1 1 --user_arg_2 2 --job-dir gs://dev-ai-platform/gcs/folder/dev/my_default_job_name/v1/output --staging-bucket gs://dev-ai-platform/gcs/folder/dev/my_default_job_name/v1/staging
 ```
 
 Note: similarly you can use `.` to skip a config file, only using command-line args, kwargs but at that point you should just go back to using Google's native `ai platform` CLI.
@@ -96,7 +101,7 @@ Note: similarly you can use `.` to skip a config file, only using command-line a
 <a name='train'>
 
 ```bash
-$ aiplatgo train --help
+aiplatgo train --help
 Usage: aiplatgo train [OPTIONS] NAME [CONFIG]
 
   submit prediction job to platform:  
@@ -113,7 +118,7 @@ Options:
 <a name='pred'>
 
 ```bash
-$ aiplatgo predict --help
+aiplatgo predict --help
 Usage: aiplatgo predict [OPTIONS] NAME [CONFIG]
 
   submit prediction job to platform:  
@@ -130,7 +135,7 @@ Options:
 <a name='local'>
 
 ```bash
-$ aiplatgo local --help
+aiplatgo local --help
 Usage: aiplatgo local [OPTIONS] VERB [CONFIG]
 
   run local training or prediction:  
