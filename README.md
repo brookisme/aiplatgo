@@ -25,6 +25,7 @@ It uses a yaml config file to replace the combination of CLI flags and config fi
 ---
 
 ### EXAMPLES
+
 ```yaml
 # filename: config.yaml`
 config:
@@ -42,7 +43,7 @@ user:
     user_arg_2: 2
 ```
 
-The examples below assume there is config file named `config.yaml`, and use the `--echo`-flag which prints out the command without executing:
+The examples below assume the above config file is named `config.yaml`, and use the `--echo`-flag which prints out the command without executing:
 
 ```bash
 # local train
