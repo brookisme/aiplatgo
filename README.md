@@ -29,23 +29,33 @@ is silly.
 ### MINIMAL EXAMPLES
 
 ```yaml
-# filename: config.yaml`
+# aiplatgo config for auto-naming conventions, gs-bucket-info, etc...
 config:
     version: 1
     bucket: dev-ai-platform
     folder: gcs/folder/dev
 
+
+# google ai platform flags with values (ie --module-name MODULE_NAME )
 args:
   package: trainer
   module: trainer.task
   region: us-central1
 
+
+# google ai platform flags without values (ie --stream-logs )
+flags:
+  - distributed
+  - stream-logs
+
+
+# user-args
 user:
     user_arg_1: 1
     user_arg_2: 2
 ```
 
-The examples below assume the above config file is named `config.yaml`, and use the `--echo`-flag which prints out the command without executing:
+The examples below assume the above config file is named `config.yaml`, and use the `--echo/-e`-flag which prints out the command without executing:
 
 ```bash
 # local train
@@ -54,7 +64,7 @@ aiplatgo local train config --echo
 
 ```bash
 # output
-gcloud ai-platform local train --package-path trainer --module-name trainer.task --user_arg_1 1 --user_arg_2 2 --job-dir v1/output
+gcloud ai-platform local train --package-path trainer --module-name trainer.task --job-dir v1/output --distributed --  --user_arg_1 1 --user_arg_2 2
 ```
 
 ```bash
@@ -64,18 +74,21 @@ aiplatgo train my_job config --echo
 
 ```bash
 # output
-gcloud ai-platform jobs submit training my_job --package-path trainer --module-name trainer.task --region us-central1 --user_arg_1 1 --user_arg_2 2 --job-dir gs://dev-ai-platform/gcs/folder/dev/my_job/v1/output --staging-bucket gs://dev-ai-platform/gcs/folder/dev/my_job/v1/staging
+gcloud ai-platform jobs submit training my_job --package-path trainer --module-name trainer.task --region us-central1 --job-dir gs://dev-ai-platform/output --staging-bucket gs://dev-ai-platform --stream-logs --  --user_arg_1 1 --user_arg_2 2
 ```
 
 With command-line args/kwargs:
 
+- `key=value` updates the `args` will update the `args` config, while `(config|flags|user).key=value` will update the `config/flags/user` config.  
+- `flag_name`, ie word not followed by `=value`, becomes a cli flag (ex `stream-logs` becomes `--stream-logs`)
+
 ```bash
-aiplatgo local train config distributed version=1234 worker-count=4 --echo
+aiplatgo local train config config.version=1234 worker-count=4 --echo
 ```
 
 ```bash
 # output
-gcloud ai-platform local train --distributed --package-path trainer --module-name trainer.task --worker-count 4 --user_arg_1 1 --user_arg_2 2 --job-dir v1/output
+gcloud ai-platform local train --package-path trainer --module-name trainer.task --worker-count 2 --job-dir my_default_job_name/v1234/output --distributed --  --user_arg_1 1 --user_arg_2 2
 ```
 
 Adding a default_job_name:
@@ -94,7 +107,7 @@ aiplatgo train . config --echo
 
 ```bash
 # output
-gcloud ai-platform jobs submit training my_default_job_name --package-path trainer --module-name trainer.task --region us-central1 --user_arg_1 1 --user_arg_2 2 --job-dir gs://dev-ai-platform/gcs/folder/dev/my_default_job_name/v1/output --staging-bucket gs://dev-ai-platform/gcs/folder/dev/my_default_job_name/v1/staging
+gcloud ai-platform jobs submit training my_default_job_name --package-path trainer --module-name trainer.task --region us-central1 --job-dir gs://dev-ai-platform/output --staging-bucket gs://dev-ai-platform --stream-logs --  --user_arg_1 1 --user_arg_2 2
 ```
 
 Note: similarly you can use `.` to skip a config file, only using command-line args/kwargs but at that point you should just go back to using Google's native `ai platform` CLI.

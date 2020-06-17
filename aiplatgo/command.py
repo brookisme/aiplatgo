@@ -38,7 +38,6 @@ ALIASES={
 }
 GS='gs:/'
 OUTPUT_DIR='output'
-STAGING_DIR='staging'
 
 #
 # PUBLIC
@@ -46,18 +45,18 @@ STAGING_DIR='staging'
 def local(verb,*args,**kwargs):
     if verb not in LOCAL_VERBS:
         raise NotImplementedError(f'<{verb}> not in {LOCAL_VERBS}')
-    kwargs=_process_kwargs(kwargs,_excluded_flags(f'local_{verb}'),gs_prefix=False)
-    return _build(f'{LOCAL} {verb}',*args,**kwargs)
+    kwargs, flags, user_kwargs=_process_kwargs(kwargs,_excluded_flags(f'local_{verb}'),gs_prefix=False)
+    return _build(f'{LOCAL} {verb}',args,kwargs,flags,user_kwargs)
 
 
 def train(job,*args,**kwargs):
-    kwargs=_process_kwargs(kwargs,_excluded_flags('train'))
-    return _build(f'{TRAIN} {job}',*args,**kwargs)
+    kwargs, flags, user_kwargs=_process_kwargs(kwargs,_excluded_flags('train'))
+    return _build(f'{TRAIN} {job}',args,kwargs,flags,user_kwargs)
 
 
 def predict(job,*args,**kwargs):
-    kwargs=_process_kwargs(kwargs,_excluded_flags('predict'))
-    return _build(f'{PREDICT} {job}',*args,**kwargs)
+    kwargs, flags, user_kwargs=_process_kwargs(kwargs,_excluded_flags('predict'))
+    return _build(f'{PREDICT} {job}',args,kwargs,flags,user_kwargs)
 
 
 #
@@ -70,13 +69,19 @@ def _excluded_flags(key):
     return [ f for f in other if f not in valid ]
 
 
-def _build(verb,*args,**kwargs):
+def _build(verb,args,kwargs,flags,user_kwargs):
     cmd=f'{AI_PLAT_ROOT} {verb}'
     for arg in args:
         cmd=_cat(cmd,key=arg) 
     for k,v in kwargs.items():
         cmd=_cat(cmd,value=v,key=k)
-    return  cmd
+    for flag in flags:
+        cmd=_cat(cmd,key=flag) 
+    if user_kwargs:
+        cmd+=' -- '
+        for k,v in user_kwargs.items():
+            cmd=_cat(cmd,value=v,key=k)
+    return cmd
 
 
 def _cat(cmd,value=None,key=None,prefix=FLAG_PREFIX):
@@ -91,57 +96,42 @@ def _cat(cmd,value=None,key=None,prefix=FLAG_PREFIX):
 
 
 def _process_kwargs(kwargs,exclude=None,gs_prefix=True):
+    flags=kwargs.get('flags',[])
+    flags=[ k for k in kwargs.get('flags',[]) if k not in exclude ]
     config=kwargs.get('config',{})
     config={ CFIG_ALIASES.get(k,k): v for k,v in config.items() }
-    _kwargs=kwargs.get('args',{})
-    _kwargs.update(kwargs.get('user',{}))
-    _kwargs={ ALIASES.get(k,k): v for k,v in _kwargs.items() }
     version=config.get('version')
     if version: 
         version=f'v{version}'
-    if not _kwargs.get('job-dir'):
-        _kwargs['job-dir']=_path(OUTPUT_DIR,config.get('name'),version)
+    _kwargs=kwargs.get('args',{})
+    _kwargs={ ALIASES.get(k,k): v for k,v in _kwargs.items() }
     if exclude: 
         [ _kwargs.pop(k,None) for k in exclude ]
+    if not _kwargs.get('job-dir'):
+        _kwargs['job-dir']=_path(config.get('name'),version,OUTPUT_DIR)
     if gs_prefix:
         _kwargs=_gs_prefix(config,_kwargs,version)
-    return _kwargs
+    return _kwargs, flags, kwargs.get('user',False)
 
 
 def _gs_prefix(config,kwargs,version):
-    folder=config.get('folder')
     bucket=config.get('bucket')
-    output_bucket=config.get('output-bucket',bucket)
     staging_bucket=config.get('staging-bucket',bucket)
-    output_folder=config.get('output-folder')
-    staging_folder=config.get(
-        'staging-folder',
-        _path(STAGING_DIR,config.get('name'),version))
-    kwargs['job-dir']=_gs_prefix_build(
-        kwargs,
-        'job-dir',
-        output_bucket,
-        folder,
-        output_folder )
-    kwargs['staging-bucket']=_gs_prefix_build( 
-        kwargs,
-        'staging-bucket',
-        staging_bucket,
-        folder,
-        staging_folder )
+    output_bucket=config.get('output-bucket',bucket)
+    output_folder=config.get('output-folder',config.get('job-dir',OUTPUT_DIR))
+    kwargs['job-dir']=_gs_prefix_build(output_bucket,output_folder)
+    kwargs['staging-bucket']=_gs_prefix_build(staging_bucket)
     return kwargs
 
 
-def _gs_prefix_build(kwargs,key,*parts):
-    value=kwargs.get(key)
-    if not re.search(f'^{GS}',str(value)):
-        value=_path(value,*([GS]+list(parts)))
-    return value
+def _gs_prefix_build(bucket,*parts):
+    if not re.search(f'^{GS}',bucket):
+        bucket=f'{GS}/{bucket}'
+    return _path(*([bucket]+list(parts)))
 
 
-def _path(value,*parts):
-    parts=[p for p in parts if p]
-    if value: parts.append(value)
+def _path(*parts):
+    parts=[ str(p) for p in parts if p ]
     return "/".join(parts)
 
 
