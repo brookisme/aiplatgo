@@ -45,8 +45,8 @@ class Parser(object):
             else: 
                 value=config.get(key,default)
         else:
-            key=list(key.keys())[0]
             default=list(key.values())[0]
+            key=list(key.keys())[0]
             value=config.get(key,default)
         return key, value
 
