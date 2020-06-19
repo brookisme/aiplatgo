@@ -2,7 +2,10 @@ import re
 from . import utils
 from pprint import pprint
 
+NO_DEFALUT_VALUE='_no_default_value'
+
 class Parser(object):
+
 
     @staticmethod
     def cli_args(args):
@@ -17,15 +20,16 @@ class Parser(object):
         if config_list:
             config=Parser.cli_args(config_list)
         self.config=config
+        self.defaults=config.get('defaults',{})
 
 
 
-    def args(self,args_key,config=None):
+    def args(self,args_key,config=None,defaults={}):
         config=config or self.config
+        defaults=defaults or self.defaults
         _args={}
-        
         for k in self.args_config.get(args_key):
-            k,v=self._get_key_value(config,k)
+            k,v=self._get_key_value(k,config,defaults)
             _args[k]=v
         return _args
 
@@ -33,19 +37,18 @@ class Parser(object):
     #
     # INTERNAL
     #
-    def _get_key_value(self,config,key):
+    def _get_key_value(self,key,config,defaults):
         if isinstance(key,str):
-            try:
-                return key, config[key]
-            except:
-                print('key',key)
-                pprint(config)
-                print('\n'*10)
-                raise
+            default=defaults.get(key,NO_DEFALUT_VALUE)
+            if default==NO_DEFALUT_VALUE:
+                value=config[key]
+            else: 
+                value=config.get(key,default)
         else:
-            default=list(key.values())[0]
             key=list(key.keys())[0]
-            return key, config.get(key,default)
+            default=list(key.values())[0]
+            value=config.get(key,default)
+        return key, value
 
 
 
