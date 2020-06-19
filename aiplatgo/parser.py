@@ -17,10 +17,10 @@ class Parser(object):
         if isinstance(args_config,str):
             args_config=utils.read_yaml(args_config)
         self.args_config=args_config
+        self.defaults=args_config.get('defaults',{})
         if config_list:
             config=Parser.cli_args(config_list)
         self.config=config
-        self.defaults=config.get('defaults',{})
 
 
 
