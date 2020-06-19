@@ -19,19 +19,11 @@ LOCAL_VERBS=['train','predict']
 TRAIN='jobs submit training'
 PREDICT='jobs submit prediction'
 CFIG_ALIASES={
-    'staging_bucket': 'staging-bucket',
-    'staging_folder': 'staging-folder',
     'staging': 'staging-bucket',
-    'output_bucket': 'output-bucket',
-    'output_folder': 'output-folder',
-    'output': 'output-bucket'
+    'output': 'output-bucket',
+    'output_folder': 'output-folder'
 }
 ALIASES={
-    'scale_tier': 'scale-tier',
-    'package_path': 'package-path',
-    'module_name': 'module-name',
-    'job_dir': 'job-dir',
-    'staging_bucket': 'staging-bucket',
     'staging': 'staging-bucket',
     'package': 'package-path',
     'module': 'module-name'
@@ -91,20 +83,22 @@ def _cat(cmd,value=None,key=None,prefix=FLAG_PREFIX):
             cmd+=prefix
         cmd+=key
     if value:
+        if isinstance(value,list):
+            value=','.join(value)
         cmd+=SPACE+str(value)
     return cmd
 
 
 def _process_kwargs(kwargs,exclude=None,gs_prefix=True):
     flags=kwargs.get('flags',[])
-    flags=[ k for k in kwargs.get('flags',[]) if k not in exclude ]
+    flags=[ utils.to_dash(k) for k in kwargs.get('flags',[]) if k not in exclude ]
     config=kwargs.get('config',{})
-    config={ CFIG_ALIASES.get(k,k): v for k,v in config.items() }
+    config={ utils.to_dash(CFIG_ALIASES.get(k,k)): v for k,v in config.items() }
     version=config.get('version')
     if version: 
         version=f'v{version}'
     _kwargs=kwargs.get('args',{})
-    _kwargs={ ALIASES.get(k,k): v for k,v in _kwargs.items() }
+    _kwargs={ utils.to_dash(ALIASES.get(k,k)): v for k,v in _kwargs.items() }
     if exclude: 
         [ _kwargs.pop(k,None) for k in exclude ]
     if not _kwargs.get('job-dir'):
