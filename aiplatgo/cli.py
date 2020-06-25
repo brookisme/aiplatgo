@@ -1,6 +1,6 @@
 from __future__ import print_function
-import os,sys
-sys.path.append('..')
+import os
+from datetime import datetime
 import re
 from pprint import pprint
 import click
@@ -31,10 +31,13 @@ PRED_HELP=(
     'default or "." to use name from yaml([config][name])  ' )+SHARED_HELP
 ECHO_HELP='if true print command without executing'
 ECHO=False
+TS_HELP='append timestamp (YYYYMMDD_HMS) to job name'
+TS=True
 ARG_KWARGS_SETTINGS={
     'ignore_unknown_options': True,
     'allow_extra_args': True
 }
+TS_FMT='%Y%m%d_%H%M%S'
 #
 # CLI INTERFACE
 #
@@ -61,13 +64,11 @@ def local(ctx,verb,config='.',echo=ECHO):
 @click.argument('name',type=str)
 @click.argument('config',type=str,required=False)
 @click.option('--echo','-e',help=ECHO_HELP,default=ECHO,is_flag=True,type=bool)
+@click.option('--timestamp','-t',help=TS_HELP,default=TS,is_flag=True,type=bool)
 @click.pass_context
-def train(ctx,name='.',config='.',echo=ECHO):
+def train(ctx,name='.',config='.',echo=ECHO,timestamp=TS):
     args, kwargs = _process_args(ctx,config)
-    if name in SKIPS:
-        name=kwargs['config']['name']
-    else:
-        kwargs['config']['name']=name
+    name, kwargs = _process_name(name,kwargs,timestamp)
     cmd=command.train(name,*args,**kwargs)
     _execute(cmd,echo)
 
@@ -77,13 +78,15 @@ def train(ctx,name='.',config='.',echo=ECHO):
 @click.argument('name',type=str)
 @click.argument('config',type=str,required=False)
 @click.option('--echo','-e',help=ECHO_HELP,default=ECHO,is_flag=True,type=bool)
+@click.option('--timestamp','-t',help=TS_HELP,default=TS,is_flag=True,type=bool)
 @click.pass_context
-def predict(ctx,name='.',config='.',echo=ECHO):
+def predict(ctx,name='.',config='.',echo=ECHO,timestamp=TS):
     args, kwargs = _process_args(ctx,config)
-    if name in SKIPS:
-        name=kwargs['config']['name']
+    name, kwargs = _process_name(name,kwargs,timestamp)
     cmd=command.predict(name,*args,**kwargs)
     _execute(cmd,echo)
+
+
 
 #
 # HELPERS
@@ -123,6 +126,16 @@ def _process_args(ctx,config):
     return args, _kwargs
 
 
+def _process_name(name,kwargs,timestamp):
+    if name in SKIPS:
+        name=kwargs['config']['name']
+    if timestamp:
+        timestamp=datetime.now().strftime(TS_FMT)
+        name=f'{name}_{timestamp}'
+    kwargs['config']['name']=name
+    return name, kwargs
+
+
 def _key_path(key):
     if '.' in key:
         d,k=key.split('.')
@@ -132,7 +145,8 @@ def _key_path(key):
 
 
 def _execute(cmd,echo):
-    print(cmd)
+    print()
+    print(re.sub('--','\n\t--',cmd))
     if not echo:
         os.system(cmd)
 
@@ -143,3 +157,5 @@ cli.add_command(local)
 cli.add_command(train)
 if __name__ == "__main__":
     cli()
+
+

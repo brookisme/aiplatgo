@@ -113,6 +113,9 @@ def _gs_prefix(config,kwargs,version):
     staging_bucket=config.get('staging-bucket',bucket)
     output_bucket=config.get('output-bucket',bucket)
     output_folder=config.get('output-folder',config.get('job-dir',OUTPUT_DIR))
+    output_folder=config.get(
+        'output-folder',
+        _path(config.get('name'),OUTPUT_DIR))
     kwargs['job-dir']=_gs_prefix_build(output_bucket,output_folder)
     kwargs['staging-bucket']=_gs_prefix_build(staging_bucket)
     return kwargs
