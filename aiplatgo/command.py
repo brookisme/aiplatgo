@@ -30,7 +30,7 @@ ALIASES={
 }
 GS='gs:/'
 OUTPUT_DIR='output'
-
+KEY_DOES_NOT_EXIST='_aipgo_missing_key'
 #
 # PUBLIC
 #
@@ -105,6 +105,11 @@ def _process_kwargs(kwargs,exclude=None,gs_prefix=True):
         _kwargs['job-dir']=_path(config.get('name'),version,OUTPUT_DIR)
     if gs_prefix:
         _kwargs=_gs_prefix(config,_kwargs,version)
+    pass_args=kwargs.get('pass_args',[])
+    for arg in pass_args:
+        value=_kwargs.get(arg,KEY_DOES_NOT_EXIST)
+        if value != KEY_DOES_NOT_EXIST:
+            kwargs['user'][arg]=value
     return _kwargs, flags, kwargs.get('user',False)
 
 
@@ -112,7 +117,6 @@ def _gs_prefix(config,kwargs,version):
     bucket=config.get('bucket')
     staging_bucket=config.get('staging-bucket',bucket)
     output_bucket=config.get('output-bucket',bucket)
-    output_folder=config.get('output-folder',config.get('job-dir',OUTPUT_DIR))
     output_folder=config.get(
         'output-folder',
         _path(config.get('name'),OUTPUT_DIR))
