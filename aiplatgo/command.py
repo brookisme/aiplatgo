@@ -84,7 +84,7 @@ def _cat(cmd,value=None,key=None,prefix=FLAG_PREFIX):
         cmd+=key
     if value:
         if isinstance(value,list):
-            value=','.join(value)
+            value=','.join([str(v) for v in value])
         cmd+=SPACE+str(value)
     return cmd
 
