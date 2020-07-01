@@ -31,7 +31,7 @@ PRED_HELP=(
     'default or "." to use name from yaml([config][name])  ' )+SHARED_HELP
 ECHO_HELP='if true print command without executing'
 ECHO=False
-TS_HELP='append timestamp (YYYYMMDD_HMS) to job name'
+TS_HELP='append timestamp (YYYYMMDD_HMS) to job name if name is not explicit'
 TS=True
 ARG_KWARGS_SETTINGS={
     'ignore_unknown_options': True,
@@ -129,9 +129,9 @@ def _process_args(ctx,config):
 def _process_name(name,kwargs,timestamp):
     if name in SKIPS:
         name=kwargs['config']['name']
-    if timestamp:
-        timestamp=datetime.now().strftime(TS_FMT)
-        name=f'{name}_{timestamp}'
+        if timestamp:
+            timestamp=datetime.now().strftime(TS_FMT)
+            name=f'{name}_{timestamp}'
     kwargs['config']['name']=name
     return name, kwargs
 
