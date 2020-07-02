@@ -50,6 +50,8 @@ def download_from_dataset(
         if isinstance(dataset[0],str):
             dataset=[pd.read_csv(d) for d in dataset]
         df=pd.concat(dataset)
+    else:
+        df=dataset
     uris=df[keys].values.tolist()
     def _down(uris):
         return download_uris(
