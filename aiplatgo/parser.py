@@ -28,7 +28,7 @@ class Parser(object):
         config=config or self.config
         defaults=defaults or self.defaults
         _args={}
-        for k in self.args_config.get(args_key):
+        for k in self.args_config.get(args_key,{}):
             k,v=self._get_key_value(k,config,defaults)
             _args[k]=v
         return _args
