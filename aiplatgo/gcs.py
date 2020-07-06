@@ -52,7 +52,7 @@ def download_from_dataset(
         df=pd.concat(dataset)
     else:
         df=dataset
-    uris=df[keys].values.tolist()
+    uris=df[keys].drop_duplicates().values.tolist()
     def _down(uris):
         return download_uris(
             uris,
