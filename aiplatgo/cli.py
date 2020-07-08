@@ -55,6 +55,9 @@ def cli(ctx):
 @click.pass_context
 def local(ctx,verb,config='.',echo=ECHO):
     args, kwargs = _process_args(ctx,config)
+    kwargs['user']['job_name']=kwargs['user'].get(
+        'job_name',
+        f'local_{datetime.now().strftime(TS_FMT)}')
     cmd=command.local(verb,*args,**kwargs)
     _execute(cmd,echo)
 
@@ -152,6 +155,7 @@ def _execute(cmd,echo):
     print(re.sub('--','\n\t--',cmd))
     if not echo:
         os.system(cmd)
+
 
 #
 # MAIN
