@@ -45,14 +45,14 @@ def local(verb,*args,**kwargs):
     return _build(f'{LOCAL} {verb}',args,kwargs,flags,user_kwargs)
 
 
-def train(job,*args,**kwargs):
+def train(verb,*args,**kwargs):
     kwargs, flags, user_kwargs=_process_kwargs(kwargs,_excluded_flags('train'))
-    return _build(f'{TRAIN} {job}',args,kwargs,flags,user_kwargs)
+    return _build(f'{TRAIN} {verb}',args,kwargs,flags,user_kwargs)
 
 
-def predict(job,*args,**kwargs):
+def predict(verb,*args,**kwargs):
     kwargs, flags, user_kwargs=_process_kwargs(kwargs,_excluded_flags('predict'))
-    return _build(f'{PREDICT} {job}',args,kwargs,flags,user_kwargs)
+    return _build(f'{PREDICT} {verb}',args,kwargs,flags,user_kwargs)
 
 
 #
