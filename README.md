@@ -53,6 +53,17 @@ flags:
 user:
     user_arg_1: 1
     user_arg_2: 2
+
+
+# local-user-args (only added with `aiplatgo local ...`)
+local:
+    local_user_arg_1: 1
+    local_user_arg_2: 2
+
+# job-user-args (only added with `aiplatgo <train|predict> ...`)
+job:
+    local_user_arg_1: 1
+    local_user_arg_2: 2
 ```
 
 The examples below assume the above config file is named `config.yaml`, and use the `--echo/-e`-flag which prints out the command without executing:

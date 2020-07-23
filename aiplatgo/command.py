@@ -37,7 +37,11 @@ KEY_DOES_NOT_EXIST='_aipgo_missing_key'
 def local(verb,*args,**kwargs):
     if verb not in LOCAL_VERBS:
         raise NotImplementedError(f'<{verb}> not in {LOCAL_VERBS}')
-    kwargs, flags, user_kwargs=_process_kwargs(kwargs,_excluded_flags(f'local_{verb}'),gs_prefix=False)
+    kwargs, flags, user_kwargs=_process_kwargs(
+                                    kwargs,
+                                    _excluded_flags(f'local_{verb}'),
+                                    gs_prefix=False,
+                                    is_local=True)
     return _build(f'{LOCAL} {verb}',args,kwargs,flags,user_kwargs)
 
 
@@ -89,7 +93,7 @@ def _cat(cmd,value=None,key=None,prefix=FLAG_PREFIX):
     return cmd
 
 
-def _process_kwargs(kwargs,exclude=None,gs_prefix=True):
+def _process_kwargs(kwargs,exclude=None,gs_prefix=True,is_local=False):
     flags=kwargs.get('flags',[])
     flags=[ utils.to_dash(k) for k in kwargs.get('flags',[]) if k not in exclude ]
     config=kwargs.get('config',{})
@@ -110,7 +114,12 @@ def _process_kwargs(kwargs,exclude=None,gs_prefix=True):
         value=_kwargs.get(arg,KEY_DOES_NOT_EXIST)
         if value != KEY_DOES_NOT_EXIST:
             kwargs['user'][arg]=value
-    return _kwargs, flags, kwargs.get('user',False)
+    kwargs['user']=kwargs.get('user',{})
+    if is_local:
+        kwargs['user'].update(kwargs.get('local',{}))
+    else:
+        kwargs['user'].update(kwargs.get('job',{}))
+    return _kwargs, flags, kwargs['user']
 
 
 def _gs_prefix(config,kwargs,version):
