@@ -1,0 +1,20 @@
+store_custom_model_configs:
+  - here
+  - instead of
+  - passing a ton of arguments
+  - to the CLI
+
+load_the_models:
+  directly: tfbox.nn.load.config
+  passing: ./your_project_module/nn/configs/your_model
+  as_the_arg: cfig_dir
+  or: 
+    - by using cfig_dir 
+    - in SomeTFBOXModel.from_config
+
+dynamically_grab_path_to_this_folder: True
+example:
+  in your_project_module.interface:
+    - _module_dir=os.path.dirname(os.path.realpath(__file__))
+    - MODEL_CONFIG_DIR=f'{_module_dir}/nn/configs'
+

@@ -1,0 +1,51 @@
+# ---------------------------------------------------------------------------------------
+#
+#    DESCRIPTION: 
+#    
+#    This file is the training config file.  detailed description to come.  
+#    also see aiplatgo.readme
+#    
+# ---------------------------------------------------------------------------------------
+
+
+config:
+    version: 1
+    name: your_name
+    bucket: your_gcs_bucket
+
+args:
+  package: trainer
+  module: trainer.task
+  region: us-central1
+  python-version: 3.7
+  runtime-version: 2.1
+  packages: packages/mproc-0.0.0.1.tar.gz
+  scale-tier: custom
+  master-machine-type: n1-standard-4
+  master-accelerator: count=1,type=nvidia-tesla-p100
+
+flags:
+  - stream-logs
+  
+pass_args:
+  - staging-bucket
+  - job-dir
+
+user:
+    user_arg_1: value-1
+    user_arg_2: value-2
+    user_arg_3: 3
+
+job:
+    user_arg_4: value-4 for `gcloud ai-platform jobs` 
+    print_model: 'False'
+
+
+local:
+    user_arg_4: value-4 for `gcloud ai-platform local` 
+    print_model: true
+
+
+
+
+    

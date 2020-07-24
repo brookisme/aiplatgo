@@ -1,0 +1,74 @@
+# ---------------------------------------------------------------------------------------
+#
+#    DESCRIPTION: 
+#    
+#    This file is used to pass CLI users arguments to the various methods
+#    in `trainer.task`, using `aiplatgo.parser.Parser`
+#
+#    The yaml file contains a key for each method defined in `trainer.task` 
+#    followed by a list of arguments to pass to the method. if the argument is a 
+#    key-value dict ( `arg_name: value` ), the `value` will be passed by default.
+#
+#    Additionally there is a `defaults` dictionary where you can define default values
+#    for the various args.
+#    
+# ---------------------------------------------------------------------------------------
+defaults:
+    arg_with_default_1: true
+    arg_with_default_2: 2
+    arg_with_default_3: three is a number
+    training_arg_2: false
+
+
+setup:
+    - setup_arg_1
+    - setup_arg_2
+    - setup_arg_3: 3 is still a number
+
+
+load_datasets:
+    - datasets_arg_1
+    - arg_with_default_2
+
+
+fetch_data:
+    - arg_with_default_2
+
+
+dataloader:
+    - training_arg_1
+    - training_arg_2
+    - validation_arg_1
+
+
+training_objects:
+    - loss_func
+    - optimizer
+    - learning_rate
+    - metrics
+
+
+callbacks:
+    - monitor
+    - tensorboard_folder   
+    - patience: 2
+
+
+build_model:
+    - nb_classes
+    - model_name
+    - model_key_path
+    - model_config_dir: null
+
+
+train:
+    - dry_run
+    - saved_model_folder
+    - nb_epochs
+    - print_model
+
+
+complete:
+    - job_name
+
+
