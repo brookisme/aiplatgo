@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'aiplatgo',
   packages = ['aiplatgo'],
-  version = '0.0.0.2',
+  version = '0.0.0.3',
   description = 'CLI wrapper for `gcloud ai-platform`',
   author = 'Brookie Guzder-Williams',
   author_email = 'brook.williams@gmail.com',
