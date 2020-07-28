@@ -7,8 +7,8 @@ import gcs_helpers.fetch as gfetch
 #
 # CONSTANTS
 #
-FETCH_CMD="gsutil -m cp -r gs://{}/{} {}"
-LS_CMD="gsutil ls gs://{}/{} "
+FETCH_CMD="gsutil -m cp -r {} {}"
+LS_CMD="gsutil ls {}"
 GS_RGX='^gs://'
 MAX_PROCESSES=64
 
@@ -17,24 +17,40 @@ MAX_PROCESSES=64
 # PUBLIC
 #
 def download_from_storage(
-        bucket,
-        folders,
-        dest,
-        folder_path=None,
+        dest=None,
+        srcs=None,
+        uri=None,
+        bucket=None,
+        folder=None,
         dry_run=False ):
-    path=bucket
-    if isinstance(folders,str):
-        folders=[folders]
-    if folder_path: 
-        path=f'{path}/{folder_path}'
-    for f in folders:
-        dest=_prepare_destination(dest,f)
-        cmd=FETCH_CMD.format(path,f,dest)
+    if dest:
+        dest=_prepare_destination(dest)
+    else:
+        raise ValueError('aiplatgo.gcs: `dest` kwarg must be provided')
+    if not uri:
+        uri="/".join([p for p in ['gs:/',bucket,folder] if p])
+    if isinstance(srcs,str):
+        srcs=[srcs]
+    dests=[]
+    if srcs:
+        for s in srcs:
+            _dest=_prepare_destination(dest)
+            _uri=f'{uri}/{s}'
+            cmd=FETCH_CMD.format(_uri,_dest)
+            print(cmd)
+            if dry_run:
+                print('--dry_run:')
+                cmd=LS_CMD.format(_uri)
+            os.system(cmd)
+            dests.append(_dest)
+    else:
+        cmd=FETCH_CMD.format(uri,dest)
         print(cmd)
         if dry_run:
             print('--dry_run:')
-            cmd=LS_CMD.format(path,f)
+            cmd=LS_CMD.format(uri)
         os.system(cmd)
+    return dest, dests
 
 
 def download_from_dataset(
@@ -83,9 +99,10 @@ def download_uri(uri,dest_root='.',safe=True,dry_run=False):
 #
 # INTERNAL
 #
-def _prepare_destination(dest,path):
-    if re.search('/',path):
-        p=Path(f'{dest}/{path}')
-        dest=p.parent
-        Path(dest).mkdir(parents=True, exist_ok=True)
+def _prepare_destination(*args):
+    dest='/'.join([a for a in args if a])
+    path=Path(dest)
+    if '.' in path.name:
+        path.parent.mkdir(parents=True, exist_ok=True)
     return dest
+
