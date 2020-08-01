@@ -9,7 +9,7 @@ import gcs_helpers.fetch as gfetch
 #
 FETCH_CMD="gsutil -m cp -r {} {}"
 LS_CMD="gsutil ls {}"
-GS_RGX='^gs://'
+GS='gs://'
 MAX_PROCESSES=64
 
 
@@ -56,6 +56,7 @@ def download_from_storage(
 def download_from_dataset(
         dataset,
         dest_root,
+        bucket=None,
         keys=['path'],
         max_processes=MAX_PROCESSES,
         safe=True,
@@ -73,26 +74,31 @@ def download_from_dataset(
         return download_uris(
             uris,
             dest_root=dest_root,
+            bucket=bucket,
             safe=safe,
             dry_run=dry_run)
     return mproc.map_with_threadpool(_down,uris,max_processes=max_processes)
 
 
-def download_uris(uris,dest_root='.',safe=True,dry_run=False):
+def download_uris(uris,dest_root='.',bucket=None,safe=True,dry_run=False):
     if isinstance(uris,str):
         uris=[uris]
-    return [download_uri(u,dest_root,safe=safe,dry_run=dry_run) for u in uris]
+    return [download_uri(u,dest_root,bucket=bucket,safe=safe,dry_run=dry_run) for u in uris]
 
 
-def download_uri(uri,dest_root='.',safe=True,dry_run=False):
-    path=re.sub(GS_RGX,"",uri)
-    path="/".join(path.split('/')[1:])
-    dest=f'{dest_root}/{path}'
-    if dry_run or (safe and os.path.isfile(dest)):
+def download_uri(uri,dest_root='.',bucket=None,safe=True,dry_run=False):
+    if bucket:
+        path=uri
+        uri=f'{GS}{bucket}/{uri}'
+    else:
+        path=re.sub(f'^{GS}',"",uri)
+        path="/".join(path.split('/')[1:])
+    dest=Path(f'{dest_root}/{path}')
+    if dry_run or (safe and dest.is_file()):
         return dest
     else:
-        Path(os.path.dirname(dest)).mkdir(parents=True, exist_ok=True)
-        return gfetch.blob(path=uri,dest=dest)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        return gfetch.blob(path=uri,dest=str(dest))
 
 
 
