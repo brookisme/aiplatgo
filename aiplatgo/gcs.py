@@ -110,5 +110,7 @@ def _prepare_destination(*args):
     path=Path(dest)
     if '.' in path.name:
         path.parent.mkdir(parents=True, exist_ok=True)
+    else:
+        path.mkdir(parents=True, exist_ok=True)
     return dest
 
