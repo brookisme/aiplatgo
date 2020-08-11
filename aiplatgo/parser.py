@@ -3,6 +3,11 @@ from . import utils
 from pprint import pprint
 
 NO_DEFALUT_VALUE='_no_default_value'
+MISSING_KEY_ERROR=(
+    '{} is not in parser.config. '
+    'provide a default value other than None or '
+    'use required=True to allow' )
+
 
 class Parser(object):
 
@@ -23,7 +28,6 @@ class Parser(object):
         self.config=config
 
 
-
     def args(self,args_key,config=None,defaults={}):
         config=config or self.config
         defaults=defaults or self.defaults
@@ -32,6 +36,14 @@ class Parser(object):
             k,v=self._get_key_value(k,config,defaults)
             _args[k]=v
         return _args
+
+
+    def get(self,key,default=None,required=False):
+        value=self.config.get(key,default)
+        if required and (value is None):
+            raise KeyError(MISSING_KEY_ERROR.format(key))
+        else:
+            return value
 
 
     #
