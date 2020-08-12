@@ -18,7 +18,7 @@ class Parser(object):
                   for i in range(0,len(args),2) }
 
 
-    def __init__(self,args_config,config=None,config_list=None):
+    def __init__(self,args_config,config=None,config_list=None,boolify=True):
         if isinstance(args_config,str):
             args_config=utils.read_yaml(args_config)
         self.args_config=args_config
@@ -26,6 +26,7 @@ class Parser(object):
         if config_list:
             config=Parser.cli_args(config_list)
         self.config=config
+        self.boolify=boolify
 
 
     def args(self,args_key,config=None,defaults={}):
@@ -43,7 +44,7 @@ class Parser(object):
         if required and (value is None):
             raise KeyError(MISSING_KEY_ERROR.format(key))
         else:
-            return value
+            return self._process_value(value)
 
 
     #
@@ -60,8 +61,16 @@ class Parser(object):
             default=list(key.values())[0]
             key=list(key.keys())[0]
             value=config.get(key,default)
-        return key, value
+        return key, self._process_value(value)
 
+
+    def _process_value(self,value):
+        if self.boolify and isinstance(value,str):
+            if value.lower()=='false':
+                value=False
+            elif value.lower()=='true':
+                value=True
+        return value
 
 
 
