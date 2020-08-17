@@ -141,7 +141,6 @@ Here is an example config file and python script:
 
 ```python
 # args_config.yaml
-
 defaults:
     # these defaults are passed for every method using the argument
     train_model: 'true'
@@ -170,39 +169,39 @@ build_model:
 
 
 ```python
-    def training_objects(loss_func, optimizer, nb_classes, acc_weights, metric, loss_weights, label_smoothing, from_logits):
-        # get optimizer,loss,metrics
-        pass
+def training_objects(loss_func, optimizer, nb_classes, acc_weights, metric, loss_weights, label_smoothing, from_logits):
+    # get optimizer,loss,metrics
+    pass
 
-    def build_model(
-            optimizer,
-            loss,
-            metrics,
-            nb_classes,
-            from_logits,
-            size,
-            cropping,
-            float_cropping,
-            in_ch):
-        # build model 
-        pass
+def build_model(
+        optimizer,
+        loss,
+        metrics,
+        nb_classes,
+        from_logits,
+        size,
+        cropping,
+        float_cropping,
+        in_ch):
+    # build model 
+    pass
 
-    @click.pass_context
-    def run(ctx):
-        parser=Parser('args_config.yaml',config_list=ctx.args)
-        
-        train_model=parser.get('train_model')
-        score_model=parser.get('score_model')
-        
-        ...
+@click.pass_context
+def run(ctx):
+    parser=Parser('args_config.yaml',config_list=ctx.args)
+    
+    train_model=parser.get('train_model')
+    score_model=parser.get('score_model')
+    
+    ...
 
-        optimizer,loss,metrics=training_objects(**parser.get('training_objects'))
+    optimizer,loss,metrics=training_objects(**parser.get('training_objects'))
 
-        model=build_model(
-            optimizer,
-            loss,
-            metrics,
-            **parser.args('build_model'))
+    model=build_model(
+        optimizer,
+        loss,
+        metrics,
+        **parser.args('build_model'))
 ```
 
 ---
