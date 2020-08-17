@@ -10,15 +10,47 @@ MISSING_KEY_ERROR=(
 
 
 class Parser(object):
+    """ Parser for user args passed through `ai-platform (local) job`
+
+    Args:
+
+        - args_config<str|dict>: config or path to yaml config file with defaults and per method args
+        - config_list<list>: 
+            * a flat list of key/value pairs. note: this is how ai-platform passes user args
+            * keys: config_list[2n]
+            * values: config_list[2n+1]
+        - config<dict|None>: dictionary containing arg key-values to parse (if config_list not provided)
+        - boolify<bool>: if true turn true/false strings into bool True/False
 
 
+    Usage:
+
+    (using click)
+
+    @click.pass_context
+    def run(ctx):
+        parser=Parser('args_config.yaml',config_list=ctx.args)
+        
+        train_model=parser.get('train_model',True)
+        score_model=parser.get('score_model',False)
+        
+        ... 
+
+        model=build_model(
+            optimizer,
+            loss,
+            metrics,
+            model_dir,
+            **parser.args('build_model'))
+
+    """
     @staticmethod
     def cli_args(args):
         return {  _key(args[i]): _value(args[i+1]) 
                   for i in range(0,len(args),2) }
 
 
-    def __init__(self,args_config,config=None,config_list=None,boolify=True):
+    def __init__(self,args_config,config_list=None,config=None,boolify=True):
         if isinstance(args_config,str):
             args_config=utils.read_yaml(args_config)
         self.args_config=args_config
