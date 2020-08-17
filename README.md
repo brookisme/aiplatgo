@@ -79,8 +79,8 @@ gcloud ai-platform local train --package-path trainer --module-name trainer.task
 ```
 
 ```bash
-# platform training
-aiplatgo train my_job config --echo
+# platform training (recommended: see below to specify job-name in config file)
+aiplatgo train --name my_job config --echo
 ```
 
 ```bash
@@ -113,7 +113,7 @@ config:
 ```
 
 ```bash
-aiplatgo train . config --echo
+aiplatgo train config --echo
 ```
 
 ```bash
@@ -129,34 +129,40 @@ Note: similarly you can use `.` to skip a config file, only using command-line a
 
 ```bash
 aiplatgo train --help
-Usage: aiplatgo train [OPTIONS] NAME [CONFIG]
+Usage: aiplatgo train [OPTIONS] [CONFIG]
 
-  submit prediction job to platform:  
-    * name<optional>: job name. default or "." to use name from yaml([config][name])  
-    * config<optional>: yaml config. default or "." uses kwargs only
-    * additional args become flags <ie> "arg_name" => "--arg_name"
-    * additional kwargs become kw-flags <ie> "arg_name=123" => "--arg_name 123"
+  submit training job to platform:  * config<optional>: yaml config. default
+  or "." uses kwargs only  * additional args become flags <ie> "arg_name" =>
+  "--arg_name"  * additional kwargs become kw-flags <ie> "arg_name=123" => "
+  --arg_name 123"
 
 Options:
-  --echo BOOLEAN  if true print command without executing
-  --help          Show this message and exit.
+  -n, --name TEXT  by default uses `config.name` for the job name. pass --name
+                   to override
+
+  -e, --echo       if true print command without executing
+  -t, --timestamp  append timestamp (YYYYMMDD_HMS) to job name
+  --help           Show this message and exit.
 ```
 
 <a name='pred'>
 
 ```bash
 aiplatgo predict --help
-Usage: aiplatgo predict [OPTIONS] NAME [CONFIG]
+Usage: aiplatgo predict [OPTIONS] [CONFIG]
 
-  submit prediction job to platform:  
-    * name<optional>: job name. default or "." to use name from yaml([config][name])  
-    * config<optional>: yaml config. default or "." uses kwargs only
-    * additional args become flags <ie> "arg_name" => "--arg_name"
-    * additional kwargs become kw-flags <ie> "arg_name=123" => "--arg_name 123"
+  submit prediction job to platform:  * config<optional>: yaml config.
+  default or "." uses kwargs only  * additional args become flags <ie>
+  "arg_name" => "--arg_name"  * additional kwargs become kw-flags <ie>
+  "arg_name=123" => "--arg_name 123"
 
 Options:
-  --echo BOOLEAN  if true print command without executing
-  --help          Show this message and exit.
+  -n, --name TEXT  by default uses `config.name` for the job name. pass --name
+                   to override
+
+  -e, --echo       if true print command without executing
+  -t, --timestamp  append timestamp (YYYYMMDD_HMS) to job name
+  --help           Show this message and exit.
 ```
 
 <a name='local'>

@@ -22,13 +22,10 @@ LOCAL_HELP=(
     'run local training or prediction:  '
     '* verb: "train" or "predict"  ' )+SHARED_HELP
 TRAIN_HELP=(
-    'submit training job to platform:  '
-    '* name<optional>: job name. '
-    'default or "." to use name from yaml([config][name])  ' )+SHARED_HELP
+    'submit training job to platform:  ' )+SHARED_HELP
 PRED_HELP=(
-    'submit prediction job to platform:  '
-    '* name<optional>: job name. '
-    'default or "." to use name from yaml([config][name])  ' )+SHARED_HELP
+    'submit prediction job to platform:  ' )+SHARED_HELP
+NAME_HELP='by default uses `config.name` for the job name. pass --name to override'
 ECHO_HELP='if true print command without executing'
 ECHO=False
 TS_HELP='append timestamp (YYYYMMDD_HMS) to job name'
@@ -64,12 +61,12 @@ def local(ctx,verb,config='.',echo=ECHO):
 
 
 @click.command( help=TRAIN_HELP,context_settings=ARG_KWARGS_SETTINGS ) 
-@click.argument('name',type=str)
 @click.argument('config',type=str,required=False)
+@click.option('--name','-n',help=NAME_HELP,default='.',is_flag=False,type=str)
 @click.option('--echo','-e',help=ECHO_HELP,default=ECHO,is_flag=True,type=bool)
 @click.option('--timestamp','-t',help=TS_HELP,default=TS,is_flag=True,type=bool)
 @click.pass_context
-def train(ctx,name='.',config='.',echo=ECHO,timestamp=TS):
+def train(ctx,config='.',name='.',echo=ECHO,timestamp=TS):
     args, kwargs = _process_args(ctx,config)
     name, kwargs = _process_name(name,kwargs,timestamp)
     cmd=command.train(name,*args,**kwargs)
@@ -78,12 +75,12 @@ def train(ctx,name='.',config='.',echo=ECHO,timestamp=TS):
 
 
 @click.command( help=PRED_HELP,context_settings=ARG_KWARGS_SETTINGS ) 
-@click.argument('name',type=str)
 @click.argument('config',type=str,required=False)
+@click.option('--name','-n',help=NAME_HELP,default='.',is_flag=False,type=str)
 @click.option('--echo','-e',help=ECHO_HELP,default=ECHO,is_flag=True,type=bool)
 @click.option('--timestamp','-t',help=TS_HELP,default=TS,is_flag=True,type=bool)
 @click.pass_context
-def predict(ctx,name='.',config='.',echo=ECHO,timestamp=TS):
+def predict(ctx,config='.',name='.',echo=ECHO,timestamp=TS):
     args, kwargs = _process_args(ctx,config)
     name, kwargs = _process_name(name,kwargs,timestamp)
     cmd=command.predict(name,*args,**kwargs)
@@ -162,6 +159,7 @@ def _execute(cmd,echo):
 #
 cli.add_command(local)
 cli.add_command(train)
+cli.add_command(predict)
 if __name__ == "__main__":
     cli()
 
