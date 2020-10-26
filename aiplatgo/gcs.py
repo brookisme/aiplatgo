@@ -87,11 +87,11 @@ def download_uris(uris,dest_root='.',bucket=None,safe=True,dry_run=False):
 
 
 def download_uri(uri,dest_root='.',bucket=None,safe=True,dry_run=False):
+    path=re.sub(f'^{GS}','',uri)
     if bucket:
-        path=uri
-        uri=f'{GS}{bucket}/{uri}'
+        path=re.sub(f'{bucket}/','',path)
+        uri=f'{GS}{bucket}/{path}'
     else:
-        path=re.sub(f'^{GS}',"",uri)
         path="/".join(path.split('/')[1:])
     dest=Path(f'{dest_root}/{path}')
     if dry_run or (safe and dest.is_file()):
