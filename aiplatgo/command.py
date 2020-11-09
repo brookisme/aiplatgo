@@ -31,6 +31,7 @@ ALIASES={
 GS='gs:/'
 OUTPUT_DIR='output'
 KEY_DOES_NOT_EXIST='_aipgo_missing_key'
+NO_VALUE_PROVIDED='_aipgo_no_value_provided'
 #
 # PUBLIC
 #
@@ -80,13 +81,28 @@ def _build(verb,args,kwargs,flags,user_kwargs):
     return cmd
 
 
-def _cat(cmd,value=None,key=None,prefix=FLAG_PREFIX):
-    if key:
+def _cat(cmd,value=NO_VALUE_PROVIDED,key=None,prefix=FLAG_PREFIX):
+    if value==NO_VALUE_PROVIDED:
+        has_key=True
+        has_value=False
+    else:
+        if utils.falsey(value):
+            value='False'
+        elif utils.truey(value):
+            value='True'
+        elif utils.noney(value):
+            value=None
+        has_value=value is not None
+        if has_value:
+            has_key=True
+        else:
+            has_key=False
+    if has_key:
         cmd+=SPACE
         if prefix: 
             cmd+=prefix
         cmd+=key
-    if value:
+    if has_value:
         if isinstance(value,list):
             value=','.join([str(v) for v in value])
         cmd+=SPACE+str(value)
