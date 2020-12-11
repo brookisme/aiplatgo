@@ -127,6 +127,8 @@ def _value(value):
             value=None
         elif _is_list_str(value):
             value=value.split(',')
+            if value[-1] is '':
+                value=value[:-1]
         else:
             value=float(value)
             if (value==value//1): 
