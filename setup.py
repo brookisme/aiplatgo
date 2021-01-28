@@ -5,7 +5,7 @@ setup(
   package_dir = {
     'aiplatgo': 'aiplatgo'
   },
-  version = '0.0.0.12',
+  version = '0.0.0.13',
   description = 'CLI wrapper for `gcloud ai-platform`',
   author = 'Brookie Guzder-Williams',
   author_email = 'brook.williams@gmail.com',
@@ -20,6 +20,13 @@ setup(
     (
       'config',[]
     )
+  ],
+  install_requires=[
+    'click',
+    'pandas',
+    'pyyaml',
+    'mproc',
+    'gcs_helpers>=0.0.0.22'
   ],
   classifiers = [],
   entry_points={
