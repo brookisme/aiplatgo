@@ -7,7 +7,7 @@ import gcs_helpers.fetch as gfetch
 #
 # CONSTANTS
 #
-FETCH_CMD="gsutil -m cp -r {} {}"
+FETCH_CMD="gsutil -m -q cp -r {} {}"
 LS_CMD="gsutil ls {}"
 GS='gs://'
 MAX_PROCESSES=64
