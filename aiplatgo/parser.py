@@ -126,15 +126,23 @@ def _value(value):
         elif _v in ['none','null']:
             value=None
         elif _is_list_str(value):
-            value=value.split(',')
-            if value[-1] is '':
-                value=value[:-1]
+            value=value.split(':')
+            value=[_relist(v) for v in value]
+            if len(value)==1:
+                value=value[0]
         else:
             value=float(value)
             if (value==value//1): 
                 value=int(value)
     except:
         pass
+    return value
+
+
+def _relist(value):
+    value=value.split(',')
+    if value[-1] is '':
+        value=value[:-1]
     return value
 
 

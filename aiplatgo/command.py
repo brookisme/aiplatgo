@@ -104,7 +104,11 @@ def _cat(cmd,value=NO_VALUE_PROVIDED,key=None,prefix=FLAG_PREFIX):
         cmd+=key
     if has_value:
         if isinstance(value,list):
-            value=','.join([str(v) for v in value])
+            if isinstance(value[0],list):
+                value=[_list_str(v) for v in value] 
+                value=_list_str(value,':')
+            else:
+                value=_list_str(value)
         cmd+=SPACE+str(value)
     return cmd
 
@@ -161,5 +165,7 @@ def _path(*parts):
     return "/".join(parts)
 
 
+def _list_str(value,dlim=','):
+    return dlim.join([str(v) for v in value])
 
 
