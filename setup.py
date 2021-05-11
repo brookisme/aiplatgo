@@ -5,7 +5,7 @@ setup(
   package_dir = {
     'aiplatgo': 'aiplatgo'
   },
-  version = '0.0.0.17',
+  version = '0.0.0.18',
   description = 'CLI wrapper for `gcloud ai-platform`',
   author = 'Brookie Guzder-Williams',
   author_email = 'brook.williams@gmail.com',

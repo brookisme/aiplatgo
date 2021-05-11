@@ -70,7 +70,7 @@ def train(ctx,config='.',name='.',echo=ECHO,timestamp=TS):
     args, kwargs = _process_args(ctx,config)
     name, kwargs = _process_name(name,kwargs,timestamp)
     cmd=command.train(name,*args,**kwargs)
-    _execute(cmd,echo,verb=verb,config=config)
+    _execute(cmd,echo,verb='train',config=config)
 
 
 
@@ -84,7 +84,7 @@ def predict(ctx,config='.',name='.',echo=ECHO,timestamp=TS):
     args, kwargs = _process_args(ctx,config)
     name, kwargs = _process_name(name,kwargs,timestamp)
     cmd=command.predict(name,*args,**kwargs)
-    _execute(cmd,echo,verb=verb,config=config)
+    _execute(cmd,echo,verb='predict',config=config)
 
 
 
