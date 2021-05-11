@@ -56,7 +56,7 @@ def local(ctx,verb,config='.',echo=ECHO):
         'job_name',
         f'local_{datetime.now().strftime(TS_FMT)}')
     cmd=command.local(verb,*args,**kwargs)
-    _execute(cmd,echo)
+    _execute(cmd,echo,verb=verb,config=config)
 
 
 
@@ -70,7 +70,7 @@ def train(ctx,config='.',name='.',echo=ECHO,timestamp=TS):
     args, kwargs = _process_args(ctx,config)
     name, kwargs = _process_name(name,kwargs,timestamp)
     cmd=command.train(name,*args,**kwargs)
-    _execute(cmd,echo)
+    _execute(cmd,echo,verb=verb,config=config)
 
 
 
@@ -84,7 +84,7 @@ def predict(ctx,config='.',name='.',echo=ECHO,timestamp=TS):
     args, kwargs = _process_args(ctx,config)
     name, kwargs = _process_name(name,kwargs,timestamp)
     cmd=command.predict(name,*args,**kwargs)
-    _execute(cmd,echo)
+    _execute(cmd,echo,verb=verb,config=config)
 
 
 
@@ -147,7 +147,11 @@ def _key_path(key):
     return d, k
 
 
-def _execute(cmd,echo):
+def _execute(cmd,echo,verb=None,config=None):
+    if verb:
+        cmd+=f" --aip_cmd {re.sub(' ','__',verb)}"
+        if config:
+            cmd+=f"__{re.sub(' ','__',config)}"
     print()
     print(re.sub('--','\n\t--',cmd))
     if not echo:
