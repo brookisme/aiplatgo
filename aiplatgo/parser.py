@@ -79,6 +79,10 @@ class Parser(object):
             return self._process_value(value)
 
 
+    def set(self,key,value):
+        self.config[key]=value
+
+
     #
     # INTERNAL
     #
